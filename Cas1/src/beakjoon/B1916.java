@@ -1,9 +1,6 @@
 package beakjoon;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Scanner;
+import java.util.*;
 
 public class B1916 {
     public static void main(String[] args) {
@@ -20,7 +17,7 @@ public class B1916 {
         }
         int start = sc.nextInt()-1;
         int end = sc.nextInt() -1;
-        int low = 1;
+        /*int low = 1;
         int high = Integer.MAX_VALUE;
         if(start != end){
             while (low<=high){
@@ -34,7 +31,9 @@ public class B1916 {
             System.out.println(low);
         }else{
             System.out.println(0);
-        }
+        }*/
+        int[] tt = dijkstra(list,new int[n], start, end, new boolean[n]);
+        System.out.println(tt[end]);
     }
 
     static boolean bfs(ArrayList<ArrayList<City>> list, boolean[] visited, int start, int end, int val){
@@ -53,13 +52,39 @@ public class B1916 {
         }
         return false;
     }
-    static class City{
+    static int[] dijkstra(ArrayList<ArrayList<City>> list, int[] map, int start, int end, boolean[] visited){
+        Arrays.fill(map, Integer.MAX_VALUE);
+        PriorityQueue<City> pq = new PriorityQueue<City>();
+        pq.offer(new City(start, 0));
+        map[start] = 0;
+        while (!pq.isEmpty()){
+            City tmp = pq.poll();
+            int t = tmp.goal;
+            if(!visited[t]){
+                visited[t] = true;
+                for(City c : list.get(t)){
+                    if(!visited[c.goal] && map[c.goal] > map[t] + c.cost){
+                        map[c.goal] = map[t] + c.cost;
+                        pq.add(new City(c.goal, map[c.goal]));
+                    }
+                }
+            }
+        }
+
+        return map;
+    }
+    static class City implements Comparable<City>{
         int goal;
         int cost;
 
         City(int goal, int cost){
             this.goal = goal;
             this.cost = cost;
+        }
+
+        @Override
+        public int compareTo(City city) {
+            return this.cost - city.cost;
         }
     }
 }
